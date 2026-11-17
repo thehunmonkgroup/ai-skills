@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "case_id": "tester-scenario-attempt",
+  "audio_path": "/absolute/path/to/call.wav",
+  "metadata_path": "/absolute/path/to/call.json",
+  "reported_failure": "Describe exactly what the tester reported, without interpreting it.",
+  "expected_behavior": "Describe the required behavior and any safety directive.",
+  "context": {
+    "tester": "Name",
+    "scenario": "000",
+    "recorded_time": "ISO 8601 timestamp with offset when known"
+  },
+  "questions": [
+    "What actually happened on the call?",
+    "What is the narrowest verifiable system-level failure, if any?"
+  ]
+}

@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review header starting point</title>
+  <style>
+    :root { --review-header-height: 0px; color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 1rem/1.5 system-ui, sans-serif; color: #172b3a; }
+    html { scroll-padding-top: calc(var(--review-header-height) + 1rem); }
+    button, input, summary { font: inherit; }
+    button, input { min-height: 2.25rem; border: 1px solid #718393; border-radius: .35rem; }
+    button, summary { cursor: pointer; }
+    button { padding: .35rem .65rem; background: #fff; color: inherit; }
+    button:disabled { cursor: default; opacity: .55; }
+    :focus-visible { outline: 3px solid #2474c5; outline-offset: 3px; }
+    .review-header { position: sticky; top: 0; z-index: 100; background: #f7f9fc; border-bottom: 1px solid #c8d2dc; }
+    .review-header-inner { max-width: 80rem; margin: auto; padding: .5rem 1rem; }
+    .review-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; }
+    .review-home { color: inherit; font-weight: 650; text-decoration: none; }
+    .reviewer-field { display: flex; flex: 1 1 12rem; align-items: center; gap: .5rem; min-width: 0; }
+    .reviewer-field input { width: 12rem; max-width: 100%; min-width: 0; padding: .25rem .5rem; }
+    .review-download { background: #174e80; border-color: #174e80; color: white; }
+    .review-files summary { padding: .35rem; }
+    .review-file-menu { position: absolute; right: 1rem; top: 100%; width: max-content; max-width: calc(100% - 2rem); max-height: calc(100dvh - var(--review-header-height) - 1rem); overflow: auto; padding: .5rem; background: white; border: 1px solid #c8d2dc; border-radius: .35rem; box-shadow: 0 .3rem 1rem #172b3a22; }
+    .review-file-menu button { display: block; width: 100%; text-align: left; margin: .2rem 0; }
+    [hidden] { display: none !important; }
+    .review-status { display: flex; flex-wrap: wrap; gap: .1rem 1rem; font-size: .8rem; color: #42576a; overflow-wrap: anywhere; }
+    .review-status p { margin: .2rem 0 0; }
+    #review-action-error { color: #a12622; }
+    main { max-width: 60rem; padding: 1rem; margin: auto; }
+    @media (max-width: 36rem) {
+      .review-header-inner { padding: .4rem .6rem; }
+      .review-home { display: none; }
+      .reviewer-field { flex-basis: 100%; }
+      .reviewer-field input { flex: 1; width: auto; }
+      .review-download { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <header class="review-header" aria-label="Review workspace">
+    <div class="review-header-inner">
+      <div class="review-toolbar">
+        <a class="review-home" href="index.html">Review home</a>
+        <div class="reviewer-field">
+          <label for="reviewer-name">Name</label>
+          <input id="reviewer-name" autocomplete="name" placeholder="Your name" disabled>
+        </div>
+        <button class="review-download" id="review-download" type="button" disabled>Download feedback</button>
+        <details class="review-files" id="review-files">
+          <summary>Files</summary>
+          <div class="review-file-menu">
+            <button id="review-resume" type="button" disabled>Resume from feedback file…</button>
+            <button id="review-separate" type="button" hidden>Keep as separate draft</button>
+          </div>
+        </details>
+        <input id="review-file" type="file" aria-label="Import feedback file" hidden>
+      </div>
+      <div class="review-status">
+        <p id="review-progress"></p>
+        <p id="review-save-status" role="status">Example: feedback functions are not connected.</p>
+        <p id="review-action-error" role="alert"></p>
+      </div>
+    </div>
+  </header>
+  <main>
+    <h1>Review header starting point</h1>
+    <p>Adapt this header to your review portal. Controls enable when the project connects its feedback functions; this example does not store or download drafts itself.</p>
+  </main>
+  <script>
+    /*
+     * Copy the header, styles, and script into the project's shared page template.
+     * Replace this preview main content and set the home link for each page depth.
+     * Keep the header outside containers that restrict sticky positioning.
+     * Other pinned controls can use top: var(--review-header-height).
+     *
+     * After restoring the current project/corpus/session, call once per page:
+     * const header = mountReviewHeader({
+     *   reviewer: draft.reviewer,
+     *   accept: ".json,application/json", // Use the actual exchange format.
+     *   onReviewerChange: name => controller.setReviewer(name),
+     *   downloadFeedback: () => controller.exportLatestEditorState(),
+     *   resumeFeedback: file => controller.validateAndResume(file),
+     *   separateDraft: () => controller.forkDraft() // Omit if unsupported.
+     * });
+     * controller.subscribe(state => header.setState({
+     *   reviewer: state.reviewer,
+     *   progress: state.progressText,
+     *   saveStatus: state.saveStatusText
+     * }));
+     *
+     * The controller owns persistence, navigation/session continuity, pending-edit
+     * export, import validation/conflicts, and truthful status. Set initial status
+     * after mounting; update it only from actual controller state. Resume/fork must
+     * update the reviewer and status too. Do not infer a successful save from a
+     * resolved UI callback. Catch errors with messages suitable for the reviewer.
+     */
+    const headerElement = document.querySelector(".review-header");
+    const measureHeader = () => document.documentElement.style.setProperty(
+      "--review-header-height", `${headerElement.getBoundingClientRect().height}px`
+    );
+    new ResizeObserver(measureHeader).observe(headerElement);
+    measureHeader();
+
+    const menu = document.getElementById("review-files");
+    const summary = menu.querySelector("summary");
+    function closeFiles() { menu.open = false; summary.focus(); }
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && menu.open) closeFiles();
+    });
+    document.addEventListener("click", event => {
+      if (menu.open && !menu.contains(event.target)) menu.open = false;
+    });
+    document.addEventListener("focusin", event => {
+      if (menu.open && !menu.contains(event.target)) menu.open = false;
+    });
+
+    function mountReviewHeader(actions) {
+      const name = document.getElementById("reviewer-name");
+      const download = document.getElementById("review-download");
+      const resume = document.getElementById("review-resume");
+      const separate = document.getElementById("review-separate");
+      const fileInput = document.getElementById("review-file");
+      const error = document.getElementById("review-action-error");
+      for (const key of ["onReviewerChange", "downloadFeedback", "resumeFeedback"]) {
+        if (typeof actions[key] !== "function") throw new TypeError(`Missing header action: ${key}`);
+      }
+      const controls = [name, download, resume, separate];
+      let busy = false;
+      async function run(action) {
+        if (busy) return;
+        busy = true;
+        controls.forEach(control => { control.disabled = true; });
+        error.textContent = "";
+        try { await action(); }
+        catch (failure) { error.textContent = failure instanceof Error ? failure.message : "Action failed. Please try again."; }
+        finally {
+          busy = false;
+          controls.forEach(control => { control.disabled = false; });
+        }
+      }
+      name.value = actions.reviewer ?? "";
+      fileInput.accept = actions.accept ?? "";
+      name.addEventListener("input", () => {
+        // Invoke immediately so export can include the latest supplied name.
+        const reportFailure = failure => {
+          error.textContent = failure instanceof Error ? failure.message : "Could not update reviewer.";
+        };
+        try { Promise.resolve(actions.onReviewerChange(name.value)).catch(reportFailure); }
+        catch (failure) { reportFailure(failure); }
+      });
+      download.addEventListener("click", () => run(actions.downloadFeedback));
+      resume.addEventListener("click", () => { closeFiles(); fileInput.click(); });
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files[0];
+        if (file) run(() => actions.resumeFeedback(file));
+        fileInput.value = "";
+      });
+      separate.hidden = typeof actions.separateDraft !== "function";
+      separate.addEventListener("click", () => { closeFiles(); run(actions.separateDraft); });
+      controls.forEach(control => { control.disabled = false; });
+      document.getElementById("review-save-status").textContent = "";
+      return {
+        setState(state) {
+          if (state.reviewer !== undefined && name.value !== (state.reviewer ?? "")) name.value = state.reviewer ?? "";
+          if (state.progress !== undefined) document.getElementById("review-progress").textContent = state.progress;
+          if (state.saveStatus !== undefined) document.getElementById("review-save-status").textContent = state.saveStatus;
+        }
+      };
+    }
+  </script>
+</body>
+</html>

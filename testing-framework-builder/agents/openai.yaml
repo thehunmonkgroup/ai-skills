@@ -1,0 +1,6 @@
+interface:
+  display_name: "Testing Framework Builder"
+  short_description: "Build reproducible testing and human review workflows"
+  default_prompt: "Use $testing-framework-builder to build or improve this project's testing framework and its project operating skill."
+policy:
+  allow_implicit_invocation: false

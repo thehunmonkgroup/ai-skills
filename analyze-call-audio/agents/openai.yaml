@@ -1,0 +1,6 @@
+interface:
+  display_name: "Analyze Call Audio"
+  short_description: "Forensic QA analysis of recorded calls"
+  default_prompt: "Use $analyze-call-audio to investigate this recorded call and identify the verifiable failure mode."
+policy:
+  allow_implicit_invocation: false
