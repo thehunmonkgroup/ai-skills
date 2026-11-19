@@ -208,7 +208,10 @@ Make saving state and the completed-feedback download easy to find. Feedback
 proposals and approved changes must remain distinguishable.
 
 Generate portable static HTML with bundled assets/data and no application backend
-or external asset dependency. Escape untrusted outputs and feedback; render
+or external asset dependency. Every build or rebuild must also produce a `.zip`
+of the complete current website, including all assets/data; report its path at
+handoff. Make packaging part of the build command so the archive stays current.
+Escape untrusted outputs and feedback; render
 them as data, not executable markup. Protect spreadsheet exports against formula
 execution from untrusted text. Feedback downloads must carry the identities used by
 the importer. Distinguish automated judgments, assistant review, and human review.

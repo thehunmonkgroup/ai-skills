@@ -67,8 +67,10 @@ definitions or their reference, and comparison limitations. Show incomplete or
 ungraded results. Preserve previous evaluations when applying corrections.}}
 
 {{For interactive review reports, state the review goal and explain only the
-controls and context needed by a domain-knowledgeable reviewer. Document static
-hosting and localhost usage, autosave status, export/import recovery, and handling
+controls and context needed by a domain-knowledgeable reviewer. Document the build
+command that produces a complete website `.zip` on every build/rebuild and its
+output path. Document static hosting and localhost usage, autosave status,
+export/import recovery, and handling
 of stale or conflicting drafts. Name the completed-feedback and optional lossless
 draft formats. Browser drafts remain proposals; restoring a draft does not apply
 its changes to the authoritative case set. Omit for workflows without reports.}}
