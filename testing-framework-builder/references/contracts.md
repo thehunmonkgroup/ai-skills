@@ -208,7 +208,12 @@ Make saving state and the completed-feedback download easy to find. Feedback
 proposals and approved changes must remain distinguishable.
 
 Generate portable static HTML with bundled assets/data and no application backend
-or external asset dependency. Every build or rebuild must also produce a `.zip`
+or external asset dependency. Include a root `build.json` recording `schema_version`,
+`site_version`, `built_at`, `application_sha256`, `corpus_revision`, and
+`corpus_sha256` for the current build. Assign every build/rebuild a new build number;
+embed it in every CSS/JS asset filename (for example, `app.42.js`, `styles.42.css`)
+and update all references to prevent stale cached assets.
+Every build or rebuild must also produce a `.zip`
 of the complete current website, including all assets/data; report its path at
 handoff. Make packaging part of the build command so the archive stays current.
 Escape untrusted outputs and feedback; render
